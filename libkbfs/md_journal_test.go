@@ -619,45 +619,47 @@ func (s *limitedCryptoSigner) Sign(ctx context.Context, msg []byte) (
 }
 
 func TestMDJournalBranchConversionAtomic(t *testing.T) {
-	RunTestOverMetadataVers(t, func(t *testing.T, ver MetadataVer) {
-		codec, crypto, id, signer, ekg, bsplit, tempdir, j :=
-			setupMDJournalTest(t, ver)
-		defer teardownMDJournalTest(t, tempdir)
+	// Do this with InitialExtraMetadataVer only, since any later
+	// version doesn't actually do any signing.
+	ver := InitialExtraMetadataVer
 
-		firstRevision := MetadataRevision(10)
-		firstPrevRoot := fakeMdID(1)
-		mdCount := 10
-		putMDRange(t, ver, id, signer, ekg, bsplit,
-			firstRevision, firstPrevRoot, mdCount, j)
+	codec, crypto, id, signer, ekg, bsplit, tempdir, j :=
+		setupMDJournalTest(t, ver)
+	defer teardownMDJournalTest(t, tempdir)
 
-		limitedSigner := limitedCryptoSigner{signer, 5}
+	firstRevision := MetadataRevision(10)
+	firstPrevRoot := fakeMdID(1)
+	mdCount := 10
+	putMDRange(t, ver, id, signer, ekg, bsplit,
+		firstRevision, firstPrevRoot, mdCount, j)
 
-		ctx := context.Background()
+	limitedSigner := limitedCryptoSigner{signer, 5}
 
-		_, err := j.convertToBranch(
-			ctx, &limitedSigner, kbfscodec.NewMsgpack(), id, NewMDCacheStandard(10))
-		require.NotNil(t, err)
+	ctx := context.Background()
 
-		// All entries should remain unchanged, since the conversion
-		// encountered an error.
+	_, err := j.convertToBranch(
+		ctx, &limitedSigner, kbfscodec.NewMsgpack(), id, NewMDCacheStandard(10))
+	require.NotNil(t, err)
 
-		ibrmds, err := j.getRange(
-			1, firstRevision+MetadataRevision(2*mdCount))
-		require.NoError(t, err)
-		require.Equal(t, mdCount, len(ibrmds))
+	// All entries should remain unchanged, since the conversion
+	// encountered an error.
 
-		checkIBRMDRange(t, j.uid, j.key, codec, crypto,
-			ibrmds, firstRevision, firstPrevRoot, Merged, NullBranchID)
+	ibrmds, err := j.getRange(
+		1, firstRevision+MetadataRevision(2*mdCount))
+	require.NoError(t, err)
+	require.Equal(t, mdCount, len(ibrmds))
 
-		require.Equal(t, 10, getMDJournalLength(t, j))
+	checkIBRMDRange(t, j.uid, j.key, codec, crypto,
+		ibrmds, firstRevision, firstPrevRoot, Merged, NullBranchID)
 
-		head, err := j.getHead()
-		require.NoError(t, err)
-		require.Equal(t, ibrmds[len(ibrmds)-1], head)
+	require.Equal(t, 10, getMDJournalLength(t, j))
 
-		// Flush all MDs so we can check garbage collection.
-		flushAllMDs(t, ctx, signer, j)
-	})
+	head, err := j.getHead()
+	require.NoError(t, err)
+	require.Equal(t, ibrmds[len(ibrmds)-1], head)
+
+	// Flush all MDs so we can check garbage collection.
+	flushAllMDs(t, ctx, signer, j)
 }
 
 type mdIDJournalEntryExtra struct {
