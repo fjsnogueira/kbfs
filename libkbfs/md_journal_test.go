@@ -107,7 +107,6 @@ func makeMDForTest(t *testing.T, ver MetadataVer, tlfID tlf.ID,
 	md.SetDiskUsage(500)
 	md.bareMd.SignWriterMetadataInternally(context.Background(),
 		kbfscodec.NewMsgpack(), signer)
-	// TODO: Fill in an ExtraMetadata.
 	return md
 }
 
