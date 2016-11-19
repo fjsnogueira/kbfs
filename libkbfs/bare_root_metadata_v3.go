@@ -109,7 +109,7 @@ func (extra ExtraMetadataV3) DeepCopy(codec kbfscodec.Codec) (
 	ExtraMetadata, error) {
 	wkb, rkb := TLFWriterKeyBundleV3{}, TLFReaderKeyBundleV3{}
 	if extra.rkb == nil || extra.wkb == nil {
-		return nil, errors.New("Missing key bundles")
+		return nil, errors.New("Missing key bundles in DeepCopy")
 	}
 	if err := kbfscodec.Update(codec, &rkb, *extra.rkb); err != nil {
 		return nil, err
@@ -474,7 +474,7 @@ func (md *BareRootMetadataV3) MakeBareTlfHandle(extra ExtraMetadata) (
 	} else {
 		wkb, rkb, ok := getKeyBundlesV3(extra)
 		if !ok {
-			return tlf.Handle{}, errors.New("Missing key bundles")
+			return tlf.Handle{}, errors.New("Missing key bundles in MakeBareTlfHandle")
 		}
 		writers = make([]keybase1.UID, 0, len(wkb.Keys))
 		readers = make([]keybase1.UID, 0, len(rkb.RKeys))
@@ -526,7 +526,7 @@ func (md *BareRootMetadataV3) GetDeviceKIDs(
 	keyGen KeyGen, user keybase1.UID, extra ExtraMetadata) ([]keybase1.KID, error) {
 	wkb, rkb, ok := getKeyBundlesV3(extra)
 	if !ok {
-		return nil, errors.New("Missing key bundles")
+		return nil, errors.New("Missing key bundles in GetDeviceKIDs")
 	}
 	dkim := wkb.Keys[user]
 	if len(dkim) == 0 {
@@ -571,7 +571,7 @@ func (md *BareRootMetadataV3) GetTLFCryptKeyParams(
 		return kbfscrypto.TLFEphemeralPublicKey{},
 			EncryptedTLFCryptKeyClientHalf{},
 			TLFCryptKeyServerHalfID{}, false,
-			errors.New("Missing key bundles")
+			errors.New("Missing key bundles in GetTLFCryptKeyParams")
 	}
 	isWriter := true
 	dkim := wkb.Keys[user]
@@ -618,7 +618,7 @@ func (md *BareRootMetadataV3) IsValidAndSigned(
 	if !md.TlfID().IsPublic() {
 		_, _, ok := getKeyBundlesV3(extra)
 		if !ok {
-			return errors.New("Missing key bundles")
+			return errors.New("Missing key bundles in IsValidAndSigned")
 		}
 	}
 
@@ -1026,7 +1026,7 @@ func (md *BareRootMetadataV3) GetUserDeviceKeyInfoMaps(keyGen KeyGen, extra Extr
 	}
 	wkb, rkb, ok := getKeyBundlesV3(extra)
 	if !ok {
-		return nil, nil, errors.New("Key bundles missing")
+		return nil, nil, errors.New("Missing key bundles in GetUserDeviceKeyInfoMaps")
 	}
 	return rkb.RKeys, wkb.Keys, nil
 }
