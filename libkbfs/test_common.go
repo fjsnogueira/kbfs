@@ -210,6 +210,7 @@ func MakeTestConfigOrBust(t logger.TestLogBackend,
 // the logged in user
 func ConfigAsUser(config *ConfigLocal, loggedInUser libkb.NormalizedUsername) *ConfigLocal {
 	c := newConfigForTest()
+	c.SetMetadataVersion(config.MetadataVersion())
 	c.SetLoggerMaker(config.loggerFn)
 
 	kbfsOps := NewKBFSOpsStandard(c)
