@@ -615,10 +615,6 @@ func (md *BareRootMetadataV3) IsValidAndSigned(
 	rkbID := md.GetTLFReaderKeyBundleID()
 	if (wkbID == TLFWriterKeyBundleID{}) !=
 		(rkbID == TLFReaderKeyBundleID{}) {
-		panic(fmt.Errorf(
-			"wkbID is empty (%t) != rkbID is empty (%t)",
-			wkbID == TLFWriterKeyBundleID{},
-			rkbID == TLFReaderKeyBundleID{}))
 		return fmt.Errorf(
 			"wkbID is empty (%t) != rkbID is empty (%t)",
 			wkbID == TLFWriterKeyBundleID{},
