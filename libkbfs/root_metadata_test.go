@@ -722,9 +722,9 @@ func TestRootMetadataUpconversionPublic(t *testing.T) {
 	h := parseTlfHandleOrBust(t, config, "alice,bob,charlie@twitter", true)
 	rmd, err := makeInitialRootMetadata(InitialExtraMetadataVer, tlfID, h)
 	require.NoError(t, err)
-	require.Equal(t, rmd.LatestKeyGeneration(), PublicKeyGen)
-	require.Equal(t, rmd.Revision(), MetadataRevision(1))
-	require.Equal(t, rmd.Version(), InitialExtraMetadataVer)
+	require.Equal(t, PublicKeyGen, rmd.LatestKeyGeneration())
+	require.Equal(t, MetadataRevision(1), rmd.Revision())
+	require.Equal(t, InitialExtraMetadataVer, rmd.Version())
 
 	// set some dummy numbers
 	diskUsage, refBytes, unrefBytes := uint64(12345), uint64(4321), uint64(1234)
@@ -738,9 +738,9 @@ func TestRootMetadataUpconversionPublic(t *testing.T) {
 	// create an MDv3 successor
 	rmd2, err := rmd.MakeSuccessor(context.Background(), config, fakeMdID(1), true)
 	require.NoError(t, err)
-	require.Equal(t, rmd2.LatestKeyGeneration(), PublicKeyGen)
-	require.Equal(t, rmd2.Revision(), MetadataRevision(2))
-	require.Equal(t, rmd2.Version(), SegregatedKeyBundlesVer)
+	require.Equal(t, PublicKeyGen, rmd2.LatestKeyGeneration())
+	require.Equal(t, MetadataRevision(2), rmd2.Revision())
+	require.Equal(t, SegregatedKeyBundlesVer, rmd2.Version())
 
 	// compare numbers
 	require.Equal(t, diskUsage, rmd2.DiskUsage())

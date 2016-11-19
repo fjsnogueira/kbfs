@@ -378,7 +378,14 @@ func (md *BareRootMetadataV2) makeSuccessorCopyV3(ctx context.Context, config Co
 	mdCopy := &BareRootMetadataV3{}
 
 	var extraCopy *ExtraMetadataV3
-	if md.LatestKeyGeneration() != PublicKeyGen {
+	if md.LatestKeyGeneration() == PublicKeyGen {
+		// Fill out the writer metadata. Return wkb will be nil.
+		_, err := md.WriterMetadataV2.ToWriterMetadataV3(
+			ctx, config.Crypto(), config.KeyManager(), kmd, &mdCopy.WriterMetadata)
+		if err != nil {
+			return nil, nil, err
+		}
+	} else {
 		// Fill out the writer metadata and new writer key bundle.
 		wkb, err := md.WriterMetadataV2.ToWriterMetadataV3(
 			ctx, config.Crypto(), config.KeyManager(), kmd, &mdCopy.WriterMetadata)
