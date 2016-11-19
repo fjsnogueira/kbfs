@@ -105,8 +105,9 @@ func makeMDForTest(t *testing.T, ver MetadataVer, tlfID tlf.ID,
 	md.fakeInitialRekey(crypto)
 	md.SetPrevRoot(prevRoot)
 	md.SetDiskUsage(500)
-	md.bareMd.SignWriterMetadataInternally(context.Background(),
+	err = md.bareMd.SignWriterMetadataInternally(context.Background(),
 		kbfscodec.NewMsgpack(), signer)
+	require.NoError(t, err)
 	return md
 }
 
