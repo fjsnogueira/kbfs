@@ -130,18 +130,6 @@ func (extra ExtraMetadataV3) GetReaderKeyBundle() *TLFReaderKeyBundleV3 {
 	return extra.rkb
 }
 
-// Copy implements the ExtraMetadata interface for ExtraMetadataV3.
-func (extra ExtraMetadataV3) Copy(includeWkb, includeRkb bool) ExtraMetadata {
-	extraCopy := &ExtraMetadataV3{}
-	if includeWkb {
-		extraCopy.wkb = extra.wkb
-	}
-	if includeRkb {
-		extraCopy.rkb = extra.rkb
-	}
-	return extraCopy
-}
-
 // Helper function to extract key bundles for the ExtraMetadata interface.
 func getKeyBundlesV3(extra ExtraMetadata) (
 	*TLFWriterKeyBundleV3, *TLFReaderKeyBundleV3, bool) {
@@ -615,11 +603,26 @@ func (md *BareRootMetadataV3) GetTLFCryptKeyParams(
 // IsValidAndSigned implements the BareRootMetadata interface for BareRootMetadataV3.
 func (md *BareRootMetadataV3) IsValidAndSigned(
 	codec kbfscodec.Codec, crypto cryptoPure, extra ExtraMetadata) error {
+	// TODO: If public, should be nil extra.
 	if !md.TlfID().IsPublic() {
 		_, _, ok := getKeyBundlesV3(extra)
 		if !ok {
-			return errors.New("Missing key bundles in IsValidAndSigned")
+			return fmt.Errorf("Missing key bundles in IsValidAndSigned %v", extra)
 		}
+	}
+
+	wkbID := md.GetTLFWriterKeyBundleID()
+	rkbID := md.GetTLFReaderKeyBundleID()
+	if (wkbID == TLFWriterKeyBundleID{}) !=
+		(rkbID == TLFReaderKeyBundleID{}) {
+		panic(fmt.Errorf(
+			"wkbID is empty (%t) != rkbID is empty (%t)",
+			wkbID == TLFWriterKeyBundleID{},
+			rkbID == TLFReaderKeyBundleID{}))
+		return fmt.Errorf(
+			"wkbID is empty (%t) != rkbID is empty (%t)",
+			wkbID == TLFWriterKeyBundleID{},
+			rkbID == TLFReaderKeyBundleID{})
 	}
 
 	if md.IsFinal() {

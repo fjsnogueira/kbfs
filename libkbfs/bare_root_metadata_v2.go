@@ -377,17 +377,17 @@ func (md *BareRootMetadataV2) makeSuccessorCopyV3(ctx context.Context, config Co
 	*BareRootMetadataV3, *ExtraMetadataV3, error) {
 	mdCopy := &BareRootMetadataV3{}
 
-	// Fill out the writer metadata and new writer key bundle.
-	wkb, err := md.WriterMetadataV2.ToWriterMetadataV3(
-		ctx, config.Crypto(), config.KeyManager(), kmd, &mdCopy.WriterMetadata)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var rkb *TLFReaderKeyBundleV3
+	var extraCopy *ExtraMetadataV3
 	if md.LatestKeyGeneration() != PublicKeyGen {
+		// Fill out the writer metadata and new writer key bundle.
+		wkb, err := md.WriterMetadataV2.ToWriterMetadataV3(
+			ctx, config.Crypto(), config.KeyManager(), kmd, &mdCopy.WriterMetadata)
+		if err != nil {
+			return nil, nil, err
+		}
+
 		// Fill out the reader key bundle.
-		rkb, err = md.RKeys.ToTLFReaderKeyBundleV3(wkb)
+		rkb, err := md.RKeys.ToTLFReaderKeyBundleV3(wkb)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -395,6 +395,8 @@ func (md *BareRootMetadataV2) makeSuccessorCopyV3(ctx context.Context, config Co
 		if err != nil {
 			return nil, nil, err
 		}
+
+		extraCopy = &ExtraMetadataV3{wkb: wkb, rkb: rkb}
 	}
 
 	mdCopy.LastModifyingUser = md.LastModifyingUser
@@ -415,7 +417,6 @@ func (md *BareRootMetadataV2) makeSuccessorCopyV3(ctx context.Context, config Co
 		return nil, nil, errors.New("Non-nil finalized info")
 	}
 
-	extraCopy := &ExtraMetadataV3{wkb: wkb, rkb: rkb}
 	return mdCopy, extraCopy, nil
 }
 

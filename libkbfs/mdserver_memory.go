@@ -813,5 +813,24 @@ func (md *MDServerMemory) getKeyBundles(
 func (md *MDServerMemory) GetKeyBundles(_ context.Context,
 	tlfID tlf.ID, wkbID TLFWriterKeyBundleID, rkbID TLFReaderKeyBundleID) (
 	*TLFWriterKeyBundleV3, *TLFReaderKeyBundleV3, error) {
-	return md.getKeyBundles(tlfID, wkbID, rkbID)
+	md.lock.Lock()
+	defer md.lock.Unlock()
+	var wkb *TLFWriterKeyBundleV3
+	if wkbID != (TLFWriterKeyBundleID{}) {
+		wkb = md.writerKeyBundleDb[mdExtraWriterKey{tlfID, wkbID}]
+	}
+	var rkb *TLFReaderKeyBundleV3
+	if rkbID != (TLFReaderKeyBundleID{}) {
+		rkb = md.readerKeyBundleDb[mdExtraReaderKey{tlfID, rkbID}]
+	}
+
+	/*
+		        // TODO: Fix.
+			err := checkKeyBundlesV3(md.config.cryptoPure(), wkbID, rkbID, wkb, rkb)
+			if err != nil {
+				return nil, nil, err
+			}
+	*/
+
+	return wkb, rkb, nil
 }

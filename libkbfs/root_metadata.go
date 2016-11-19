@@ -99,7 +99,6 @@ func (p PrivateMetadata) ChangesBlockInfo() BlockInfo {
 type ExtraMetadata interface {
 	MetadataVersion() MetadataVer
 	DeepCopy(kbfscodec.Codec) (ExtraMetadata, error)
-	Copy(includeWkb, includeRkb bool) ExtraMetadata
 }
 
 // A RootMetadata is a BareRootMetadata but with a deserialized
@@ -711,15 +710,12 @@ func (md *RootMetadata) fillInDevices(crypto Crypto,
 
 func (md *RootMetadata) finalizeRekey(
 	crypto cryptoPure, prevKey, currKey kbfscrypto.TLFCryptKey) error {
-	wkbID := md.bareMd.GetTLFWriterKeyBundleID()
-	rkbID := md.bareMd.GetTLFReaderKeyBundleID()
 	err := md.bareMd.FinalizeRekey(crypto, prevKey, currKey, md.extra)
-	if err == nil && md.extra != nil {
-		includeWkb := wkbID != md.bareMd.GetTLFWriterKeyBundleID()
-		includeRkb := rkbID != md.bareMd.GetTLFReaderKeyBundleID()
-		md.extraNew = md.extra.Copy(includeWkb, includeRkb)
+	if err != nil {
+		return err
 	}
-	return err
+	md.extraNew = md.extra
+	return nil
 }
 
 func (md *RootMetadata) getUserDeviceKeyInfoMaps(keyGen KeyGen) (
