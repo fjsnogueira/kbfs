@@ -867,10 +867,14 @@ func (md *BareRootMetadataV3) AddNewKeysForTesting(
 	if md.TlfID().IsPublic() {
 		panic("Called AddNewKeysForTesting on public TLF")
 	}
+	var pubKeys []kbfscrypto.TLFPublicKey
 	if md.WriterMetadata.LatestKeyGen >= FirstValidKeyGen {
-		// TODO: Relax this if needed (but would have to
-		// retrieve the previous pubkeys below).
-		panic("Cannot add more than one key generation")
+		prevExtraV3 := prevExtra.(*ExtraMetadataV3)
+		pubKeys = prevExtraV3.wkb.TLFPublicKeys
+	} else {
+		if extra != nil {
+			panic("non-nil extra for initial keys")
+		}
 	}
 	for _, dkim := range wDkim {
 		for _, info := range dkim {
@@ -896,10 +900,8 @@ func (md *BareRootMetadataV3) AddNewKeysForTesting(
 	}
 
 	wkb := &TLFWriterKeyBundleV3{
-		Keys: wDkim,
-		// TODO: Retrieve the previous pubkeys and prepend
-		// them.
-		TLFPublicKeys: []kbfscrypto.TLFPublicKey{pubKey},
+		Keys:          wDkim,
+		TLFPublicKeys: append(pubKeys, pubKey),
 		// TODO: Size this to the max EPubKeyIndex for writers.
 		TLFEphemeralPublicKeys: make([]kbfscrypto.TLFEphemeralPublicKey, 1),
 	}
