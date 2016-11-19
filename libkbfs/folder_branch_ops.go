@@ -4306,6 +4306,11 @@ func (fbo *folderBranchOps) UnstageForTesting(
 // mdWriterLock must be taken by the caller.
 func (fbo *folderBranchOps) rekeyLocked(ctx context.Context,
 	lState *lockState, promptPaper bool) (err error) {
+	fbo.log.CDebugf(ctx, "rekeyLocked")
+	defer func() {
+		fbo.deferLog.CDebugf(ctx, "rekeyLocked Done: %v", err)
+	}()
+
 	fbo.mdWriterLock.AssertLocked(lState)
 
 	if !fbo.isMasterBranchLocked(lState) {
@@ -4491,11 +4496,6 @@ func (fbo *folderBranchOps) rekeyWithPrompt() {
 
 // Rekey rekeys the given folder.
 func (fbo *folderBranchOps) Rekey(ctx context.Context, tlf tlf.ID) (err error) {
-	fbo.log.CDebugf(ctx, "Rekey")
-	defer func() {
-		fbo.deferLog.CDebugf(ctx, "Done: %v", err)
-	}()
-
 	fb := FolderBranch{tlf, MasterBranch}
 	if fb != fbo.folderBranch {
 		return WrongOpsError{fbo.folderBranch, fb}
