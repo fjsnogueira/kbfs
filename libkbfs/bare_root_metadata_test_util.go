@@ -42,7 +42,8 @@ func FakeInitialRekey(md MutableBareRootMetadata,
 		}
 	}
 
-	return md.AddNewKeysForTesting(crypto, wDkim, rDkim, pubKey)
+	// Since this is the initial rekey, Use nil for prevExtra.
+	return md.AddNewKeysForTesting(nil, crypto, wDkim, rDkim, pubKey)
 }
 
 var testMetadataVers = []MetadataVer{

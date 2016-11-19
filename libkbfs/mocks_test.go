@@ -3352,15 +3352,15 @@ func (_mr *_MockblockServerLocalRecorder) GetUserQuotaInfo(arg0 interface{}) *go
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "GetUserQuotaInfo", arg0)
 }
 
-func (_m *MockblockServerLocal) getAllRefs(ctx context.Context, tlfID tlf.ID) (map[BlockID]blockRefMap, error) {
-	ret := _m.ctrl.Call(_m, "getAllRefs", ctx, tlfID)
+func (_m *MockblockServerLocal) getAllRefsForTest(ctx context.Context, tlfID tlf.ID) (map[BlockID]blockRefMap, error) {
+	ret := _m.ctrl.Call(_m, "getAllRefsForTest", ctx, tlfID)
 	ret0, _ := ret[0].(map[BlockID]blockRefMap)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-func (_mr *_MockblockServerLocalRecorder) getAllRefs(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "getAllRefs", arg0, arg1)
+func (_mr *_MockblockServerLocalRecorder) getAllRefsForTest(arg0, arg1 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "getAllRefsForTest", arg0, arg1)
 }
 
 // Mock of BlockSplitter interface
@@ -5520,15 +5520,15 @@ func (_mr *_MockMutableBareRootMetadataRecorder) SetRevision(arg0 interface{}) *
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "SetRevision", arg0)
 }
 
-func (_m *MockMutableBareRootMetadata) AddNewKeysForTesting(crypto cryptoPure, wDkim UserDeviceKeyInfoMap, rDkim UserDeviceKeyInfoMap, pubKey kbfscrypto.TLFPublicKey) (ExtraMetadata, error) {
-	ret := _m.ctrl.Call(_m, "AddNewKeysForTesting", crypto, wDkim, rDkim, pubKey)
+func (_m *MockMutableBareRootMetadata) AddNewKeysForTesting(prevExtra ExtraMetadata, crypto cryptoPure, wDkim UserDeviceKeyInfoMap, rDkim UserDeviceKeyInfoMap, pubKey kbfscrypto.TLFPublicKey) (ExtraMetadata, error) {
+	ret := _m.ctrl.Call(_m, "AddNewKeysForTesting", prevExtra, crypto, wDkim, rDkim, pubKey)
 	ret0, _ := ret[0].(ExtraMetadata)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-func (_mr *_MockMutableBareRootMetadataRecorder) AddNewKeysForTesting(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "AddNewKeysForTesting", arg0, arg1, arg2, arg3)
+func (_mr *_MockMutableBareRootMetadataRecorder) AddNewKeysForTesting(arg0, arg1, arg2, arg3, arg4 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "AddNewKeysForTesting", arg0, arg1, arg2, arg3, arg4)
 }
 
 func (_m *MockMutableBareRootMetadata) NewKeyGeneration(pubKey kbfscrypto.TLFPublicKey) ExtraMetadata {

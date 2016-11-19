@@ -1743,7 +1743,7 @@ type MutableBareRootMetadata interface {
 	// AddNewKeysForTesting adds new writer and reader TLF key
 	// bundles to this revision of metadata.  pubKey is non-empty
 	// only for server-side tests.
-	AddNewKeysForTesting(crypto cryptoPure,
+	AddNewKeysForTesting(prevExtra ExtraMetadata, crypto cryptoPure,
 		wDkim, rDkim UserDeviceKeyInfoMap,
 		pubKey kbfscrypto.TLFPublicKey) (ExtraMetadata, error)
 	// NewKeyGeneration adds a new key generation to this revision of metadata.

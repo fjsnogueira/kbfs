@@ -860,9 +860,10 @@ func (md *BareRootMetadataV3) SetRevision(revision MetadataRevision) {
 }
 
 // AddNewKeysForTesting implements the MutableBareRootMetadata interface for BareRootMetadataV3.
-func (md *BareRootMetadataV3) AddNewKeysForTesting(crypto cryptoPure,
-	wDkim, rDkim UserDeviceKeyInfoMap,
-	pubKey kbfscrypto.TLFPublicKey) (extra ExtraMetadata, err error) {
+func (md *BareRootMetadataV3) AddNewKeysForTesting(
+	prevExtra ExtraMetadata, crypto cryptoPure,
+	wDkim, rDkim UserDeviceKeyInfoMap, pubKey kbfscrypto.TLFPublicKey) (
+	extra ExtraMetadata, err error) {
 	if md.TlfID().IsPublic() {
 		panic("Called AddNewKeysForTesting on public TLF")
 	}
