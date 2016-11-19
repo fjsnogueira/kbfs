@@ -475,6 +475,7 @@ func TestMakeRekeyReadError(t *testing.T) {
 	RunTestOverMetadataVers(t, func(t *testing.T, ver MetadataVer) {
 		config := MakeTestConfigOrBust(t, "alice", "bob")
 		defer config.Shutdown()
+		config.SetMetadataVersion(ver)
 
 		tlfID := tlf.FakeID(1, false)
 		h := parseTlfHandleOrBust(t, config, "alice", false)
@@ -492,9 +493,12 @@ func TestMakeRekeyReadError(t *testing.T) {
 		err = makeRekeyReadErrorHelper(rmd.ReadOnly(), h, FirstValidKeyGen, h.FirstResolvedWriter(), "alice")
 		require.Equal(t, NeedSelfRekeyError{"alice"}, err)
 
-		// MDv3 TODO: This case will no longer be valid. We'll expect the error to be NeedSelfRekeyError.
 		err = makeRekeyReadErrorHelper(rmd.ReadOnly(), h, FirstValidKeyGen+1, h.FirstResolvedWriter(), "alice")
-		require.Equal(t, NeedOtherRekeyError{"alice"}, err)
+		if ver < SegregatedKeyBundlesVer {
+			require.Equal(t, NeedOtherRekeyError{"alice"}, err)
+		} else {
+			require.Equal(t, NeedSelfRekeyError{"alice"}, err)
+		}
 	})
 }
 
