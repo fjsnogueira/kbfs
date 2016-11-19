@@ -735,6 +735,13 @@ func (km *KeyManagerStandard) Rekey(ctx context.Context, md *RootMetadata, promp
 
 	if !isWriter {
 		if len(newReaderUsers) > 0 || addNewWriterDevice || incKeyGen {
+			if addNewReaderDeviceForSelf {
+				if err := md.finalizeRekey(km.config.Crypto(),
+					kbfscrypto.TLFCryptKey{}, tlfCryptKey); err != nil {
+					return false, nil, err
+				}
+			}
+
 			// If we're a reader but we haven't completed all the work, return
 			// RekeyIncompleteError.
 			return addNewReaderDeviceForSelf, nil, RekeyIncompleteError{}

@@ -1087,6 +1087,7 @@ func (md *BareRootMetadataV3) GetTLFReaderKeyBundleID() TLFReaderKeyBundleID {
 func (md *BareRootMetadataV3) FinalizeRekey(
 	crypto cryptoPure, prevKey, currKey kbfscrypto.TLFCryptKey,
 	extra ExtraMetadata) error {
+	// TODO: Document why prevKey can be nil here.
 	extraV3, ok := extra.(*ExtraMetadataV3)
 	if !ok {
 		return errors.New("Invalid extra metadata")
